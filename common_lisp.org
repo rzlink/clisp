@@ -1,0 +1,52 @@
+* MACRO
+** When and Unless
+If conditional:
+
+(if condition then-form [else-form])
+
+(defmacro when (condition &rest body)
+  `(if ,condition (progn ,@body)))
+
+(defmacro unless (condition &rest body)
+  `(if (not ,condition) (progn ,@body)))
+
+** Cond
+
+(cond
+  (test-1 form*)
+  .
+  .
+  .
+  (test-n form*))
+
+** Looping
+
+*** DOLIST and DOTIMES
+
+(dolist (var list-form)
+  body-form*)
+
+Example:
+(dolist (x '(1 2 3)) (print x))
+
+;; you can use return to break out the loop early
+(dolist (x '(1 2 3)) (print x) (if (evenp x) (return)))
+
+(dotimes (var count-form)
+  body-form*)
+
+;; this will print from 0 to 3
+(dotimes (i 4) (print i))
+
+;; there is a nested loop
+(dotimes (x 20)
+  (dotimes (y 20)
+    (format t "~3d " (* (1+ x) (1+ y))))
+  (format t "~%"))
+
+* DO
+
+(do (variable-definition*)
+    (end-test-form result-form*)
+  statement*)
+

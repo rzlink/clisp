@@ -46,10 +46,10 @@
       (find-island nodes))
     islands))
 
-(defun connect-with-bridges (islands)
-  (when (cdr islands)
-    (append (edge-pair (caar islands) (caadr islands))
-            (connect-with-bridges (cdr islands)))))
+defun connect-with-bridges (islands)
+(when (cdr islands)
+  (append (edge-pair (caar islands) (caadr islands))
+          (connect-with-bridges (cdr islands))))
 
 ;;;; return all edge lists
 (defun connect-all-islands (nodes edge-list)
