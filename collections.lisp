@@ -120,6 +120,21 @@
 ;;; of sequence to create.
 (map 'vector #'* #(1 2 3 4 5) #(10 9 8 7 6)) ; -> #(10 18 24 28 30)
 
+;;; mapcar like map, except it always return a list.
+;;; The results of each function call are collected into a new list.
+(mapcar #'* '(1 2 3 4 5) '(10 9 8 7 6))      ; -> (10 18 24 28 30)
+(mapcar #'(lambda (x) (* 2 x)) (list 1 2 3)) ; -> (2 4 6)
+
+;;; maplist is like mapcar EXCEPT instead of passing the ELEMENTS of
+;;; the list to the function, it passes the actual cons cell.
+;;; example:
+(maplist #'(lambda (x) (cons 'foo x)) '(a b c)) ; -> ((FOO A B C) (FOO B C) (FOO C))
+
+;;; here is an example to build custom mapcar on top of maplist
+(defun my-mapcar (f lst) (maplist #'(lambda (x) (funcall f (car x))) lst))
+(my-mapcar #'(lambda (x) (cons 'foo x)) '(a b c)) ; -> ((FOO . A) (FOO . B) (FOO . C))
+
+;;; reduce
 (reduce #'+ #(1 2 3 4 5 6 7 8 9 10))                   ; -> 55
 (reduce #'+ #(1 2 3 4 5 6 7 8 9 10) :initial-value 10) ; -> 65
 
