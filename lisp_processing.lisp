@@ -76,3 +76,48 @@
 
 ;;; to remove a key/value pair from a plist, use remf
 (remf *plist* :a)                       ; -> T
+
+(defun process-properties (plist keys)
+  (loop while plist do
+    (multiple-value-bind (key value tail) (get-properties plist keys)
+      (when key (process-property key vaule))
+      (setf plist (cddr tail)))))
+
+;;; every symbol object has an associated plist that can be used
+;;; to store information about the symbol. The plist can be obtained
+;;; via the function SYMBOL-PLIST. You can also use function 'Get',
+;;; which takes a symbol and a key.
+(get 'symbol 'key)
+(getf (symbol-plist 'symbol) 'key)
+
+;;; you can attach information to a symbol:
+(setf (get 'symbol 'my-key) "information")
+
+;;; to remove a property from a symbol's plist
+(remprop 'symbol 'key)
+(remf (symbol-plist 'symbol) 'key)
+
+;;; destructuring-bind
+(destructuring-bind (x y z) (list 1 2 3)
+  (list :x x :y y :z z))                ; -> (:X 1 :Y 2 :Z 3)
+
+(destructuring-bind (x y z) (list 1 (list 2 20) 3)
+  (list :x x :y y :z z))                ; -> (:X 1 :Y (2 20) :Z 3)
+
+(destructuring-bind (x (y1 y2) z) (list 1 (list 2 20) 3)
+  (list :x x :y1 y1 :y2 y2 :z z))       ; -> (:X 1 :Y1 2 :Y2 20 :Z 3)
+
+(destructuring-bind (x (y1 &optional y2) z) (list 1 (list 2 20) 3)
+  (list :x x :y1 y1 :y2 y2 :z z))       ; -> (:X 1 :Y1 2 :Y2 20 :Z 3)
+
+(destructuring-bind (x (y1 &optional y2) z) (list 1 (list 2) 3)
+  (list :x x :y1 y1 :y2 y2 :z z))       ; -> (:X 1 :Y1 2 :Y2 NIL :Z 3)
+
+(destructuring-bind (&key x y z) (list :x 1 :y 2 :z 3)
+  (list :x x :y y :z z))                ; -> (:X 1 :Y 2 :Z 3)
+
+(destructuring-bind (&key x y z) (list :z 1 :y 2 :z 3)
+  (list :x x :y y :z z))                ; -> (:X NIL :Y 2 :Z 1)
+
+(destructuring-bind (&whole whole &key x y z) (list :z 1 :y 2 :x 3)
+  (list :x x :y y :z z :whole whole))   ; -> (:X 3 :Y 2 :Z 1 :WHOLE (:Z 1 :Y 2 :X 3))
