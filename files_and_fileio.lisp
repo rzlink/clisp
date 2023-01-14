@@ -32,3 +32,37 @@
 
 (with-open-file (stream "/home/rzlink/github/clisp/test.text" :direction :output)
   (format stream "Some text."))
+
+(pathname-directory "home/rzlink/github/clisp/test.txt") ; -> (:RELATIVE "home" "rzlink" "github" "clisp")
+
+(directory-namestring #p"home/rzlink/github/clisp/test.txt") ; -> "home/rzlink/github/clisp/"
+
+(file-namestring #"/home/rzlink/github/clisp/test.txt") ; -> "test.txt"
+
+;;; constructing new pathnames
+(make-pathname
+ :directory '(:absolute "foo" "bar")
+ :name "baz"
+ :type "txt")                           ; #P"/foo/bar/baz.txt"
+
+(make-pathname :type "html" :defaults input-file)
+
+(merge-pathnames #p "foo/bar.html" #p "/WWW/html/") ; ->  #P"/www/html/foo/bar.html"
+
+(enough-namestring #p "/www/html/foo/bar.html" #p "/www/") ; -> "html/foo/bar.html"
+
+;;; if merge-pathnames only provide single argument, the second argument will use *default-pathname-defaults*
+(setf *default-pathname-defaults* #p "/home/rzlink/")
+(merge-pathnames #p "foo.txt")          ; -> #P"/home/rzlink/foo.txt"
+
+;;; Get the length of a file
+(with-open-file (in "/home/rzlink/github/clisp/files_and_fileio.lisp" :element-type '(unsigned-byte 8))
+  (file-length in))
+
+(let ((s (make-string-input-stream "1.23")))
+  (unwind-protect (read s)
+    (close s)))
+
+(with-output-to-string (out)
+  (format out "hello, world ")
+  (format out "~s" (list 1 2 3)))       ; -> "hello, world (1 2 3)"
