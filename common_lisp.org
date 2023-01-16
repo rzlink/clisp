@@ -50,3 +50,166 @@ Example:
     (end-test-form result-form*)
   statement*)
 
+* LOOP
+
+** Counting loops:
+
+*** From where phrase (initial value):
+   from, downfrom, upfrom
+
+*** To where phrase (stopping point):
+to, upto, below, downto, above
+
+*** how much phrase (step):
+by
+
+**** No default from where:
+
+***** Incremental default start at 0
+
+    #+begin_src lisp
+      ;;; all below statement has same result.
+      (loop for i upto 10 collect i)
+      (loop for i from 0 to 10 collect i)
+      (loop for i from 0 upto 10 collect i)
+      (loop for i upfrom 0 upto 10 collect i)
+      (loop for i below 11 collect i)
+    #+end_src
+
+#+RESULTS:
+| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+
+***** No decremental default, need specify explicitly.
+#+begin_src lisp
+  ;;; (loop for i downto -10 collect i) ; this is wrong, instead, write this:
+  (loop for i from 0 downto -10 collect i)
+  (loop for i downfrom 0 to -10 collect i)
+  (loop for i downfrom 0 downto -10 collect i)
+  (loop for i downfrom 0 above -11 collect i)
+#+end_src
+
+#+RESULTS:
+| 0 | -1 | -2 | -3 | -4 | -5 | -6 | -7 | -8 | -9 | -10 |
+
+#+begin_src lisp
+  (loop for i from 0 above -10 collect i)
+#+end_src
+
+#+RESULTS:
+| 0 | -1 | -2 | -3 | -4 | -5 | -6 | -7 | -8 | -9 |
+
+**** repeat
+#+begin_src lisp
+  (loop repeat 5 collect 1)
+#+end_src
+
+#+RESULTS:
+| 1 | 1 | 1 | 1 | 1 |
+
+** Looping over collections and packages
+
+A phrase of this form:
+*** for var in list-form
+
+#+begin_src lisp
+  (loop for i in (list 10 20 30 40) collect i)
+#+end_src
+
+#+RESULTS:
+| 10 | 20 | 30 | 40 |
+
+#+begin_src lisp
+  (loop for i in (list 10 20 30 40) by #'cddr collect i)
+#+end_src
+
+#+RESULTS:
+| 10 | 30 |
+
+*** for var on list-form
+
+#+begin_src lisp
+  (loop for x on (list 10 20 30) collect x)
+#+end_src
+
+#+RESULTS:
+| 10 | 20 | 30 |
+| 20 | 30 |    |
+| 30 |    |    |
+
+#+begin_src lisp
+  (loop for x on (list 10 20 30) by #'cddr collect x)
+#+end_src
+
+#+RESULTS:
+| 10 | 20 | 30 |
+| 30 |    |    |
+
+
+*** Looping over the elements of vector
+#+begin_src lisp
+  (loop for x across "abcd" collect x)
+#+end_src
+
+#+RESULTS:
+: (#\a #\b #\c #\d)
+
+For hash table
+(loop for var being the things in hash-table ...)
+
+Possible values for things are hash-keys and hash-values.
+#+begin_example
+  (loop for k being the hash-keys in h ...)
+  (loop for v being the hash-values in h ...)
+#+end_example
+
+If need both key and value, can use the *using* subclause.
+#+begin_example
+  (loop for k being the hash-keys in h using (hash-value v) ...)
+  (loop for v being the hash-values in h using (hash-key k)  ...)
+#+end_example
+
+*** Equals-Then iteration
+
+(loop for var = initial-value-form [ then step-form ] ...)
+
+*** Destructuring Variables
+
+#+begin_src lisp
+  (loop for (a b) in '((1 2) (3 4) (5 6))
+         collect (list a b))
+#+end_src
+
+#+RESULTS:
+| 1 | 2 |
+| 3 | 4 |
+| 5 | 6 |
+
+#+begin_src lisp
+  (loop for (a nil) in '((1 2) (3 4) (5 6))
+        collect a)
+#+end_src
+
+#+RESULTS:
+| 1 | 3 | 5 |
+
+*** Value Accumulation
+
+Each accumulation clause starts with a verb and follows this pattern:
+Verb form [ into var ]
+
+Available verbs are:
+collect, append, nconc, count, sum, maximize and minimize.
+
+#+begin_src lisp
+  (defparameter *random* (loop repeat 100 collect (random 10000)))
+  (loop for i in *random*
+                 counting (evenp i) into evens
+                 counting (oddp i) into odds
+                 summing i into total
+                 maximizing i into max
+                 minimizing i into min
+                 finally (return (list min max total evens odds)))
+#+end_src
+
+#+RESULTS:
+| 47 | 9959 | 505435 | 51 | 49 |
