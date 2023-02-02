@@ -1,3 +1,18 @@
+* Project Management
+Using CL-Project to generate the project skeletons
+
+https://github.com/fukamachi/cl-project
+
+(ql:quickload "cl-project")
+
+(cl-project:make-project #p"/home/rzlink/github/clisp/local-projects/projectname"
+  :name "Demo"
+  :description "Demo project"
+  :author "John Ho"
+  :email "jonnho@gmail.com"
+  :license "LLGPL"
+  :depends-on '(:clack :cl-annot))
+
 * MACRO
 ** When and Unless
 If conditional:
