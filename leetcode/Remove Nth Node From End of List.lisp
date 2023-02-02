@@ -1,0 +1,12 @@
+(defun remove-nth-from-end (head n)
+  (let ((node (cons 0 head))
+        (len (length head)))
+    (labels ((traverse (head n)
+               (unless (or (null head) (< n 0))
+                 (if (= 0 n)
+                     (setq head (cons (car head) (cddr head)))
+                     (traverse (cdr head) (1- n))))))
+      (traverse node (- len n)))
+    (cdr node)))
+
+(remove-nth-from-end '(1 2 3 4 5) 2)

@@ -1,0 +1,18 @@
+(defun generate-parenthesis (n)
+  (let ((res '()))
+    (labels ((traverse (left right str)
+                       (if (and (zerop left) (zerop right))
+                           (setq res (append res (list str)))
+                         (progn
+                           (when (> left 0)
+                             (setf str (concatenate 'string str "("))
+                             (traverse (1- left) right str)
+                             (setf str (subseq str 0 (1- (length str)))))
+                           (when (< left right)
+                             (setf str (concatenate 'string str ")"))
+                             (traverse left (1- right) str)
+                             (setf str (subseq str 0 (1- (length str)))))))))
+      (traverse n n ""))
+    res))
+
+(generate-parenthesis 4)
