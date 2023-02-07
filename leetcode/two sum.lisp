@@ -15,3 +15,13 @@
 (defparameter *x* '(2 7 11 15))
 (defparameter *target* 9)
 (two-sum *x* *target*)
+
+
+(defun two-sum (nums target)
+  (let ((hash-table (make-hash-table :test #'equal)))
+    (loop for i from 0 below (length nums) do
+      (let ((complement (- target (elt nums i))))
+        (when (gethash complement hash-table)
+          (return (list (gethash complement hash-table) i))))
+      (setf (gethash (elt nums i) hash-table i))
+            nil)))
