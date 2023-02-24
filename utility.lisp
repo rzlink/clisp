@@ -163,3 +163,15 @@
   (apply #'append (apply #'mapcar fn lsts)))
 
 (mappend #'intersection )
+
+
+(defun add-to-end (x e)
+  "Add element E to the end of list X."
+  (append x (list e)))
+
+(defun add-to-end (x y)
+  (reverse (cons y (reverse x))))
+
+(defun last-element (lst)
+  "Returns the last element of a list instead of the last cons cell"
+  ( (last lst)))
