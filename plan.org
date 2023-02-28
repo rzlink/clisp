@@ -1,0 +1,8 @@
+* Plan for Feb 27 - Mar 3
+** [TODO]: appointment for h-pylori lab test
+** [TODO]: Common lisp: A Gentle Introduction to Symbolic Computation
+ - All Questions for
+   Character 8. Recursion
+   Character 9. Input/Output
+   Character 10. Assignment
+   
