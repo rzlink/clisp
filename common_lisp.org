@@ -228,3 +228,11 @@ collect, append, nconc, count, sum, maximize and minimize.
 
 #+RESULTS:
 | 47 | 9959 | 505435 | 51 | 49 |
+
+So the five pointers in a Common Lisp symbol are:
+
+- name - The name of the symbol, as a string.
+- value - The value of the symbol, which can be any Lisp object.
+- function - The function binding of the symbol, if any.
+- plist - The property list of the symbol.
+- package - The package where the symbol is defined.
