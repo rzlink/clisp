@@ -159,3 +159,57 @@
 (defun prompt-for (prompt-string)
   (format t "~A" prompt-string)
   (read))
+
+(defun square (n)
+  (* n n))
+
+(setf glee-club
+      '((john smilth) (barbara wilson) (mustapha ali)))
+
+(defun print-one-name (name)
+  (format t "~&~10S ~S"
+          (second name)
+          (first name)))
+
+(defun print-all-names (x)
+  (mapcar #'print-one-name x)
+  'done)
+
+(defun sevenths (x)
+  (mapcar #'(lambda (numerator)
+            (format t "~&~4,2F / 7 is ~7,5F"
+             numerator
+             (/ numerator 7.0)))
+          x)
+  'done)
+
+(sevenths '(1 3/2 2 2.5 3))
+
+;;; HANDING END-OF-FILE CONDITIONS
+(defun read-my-file ()
+  (with-open-file (stream "~/github/clisp/timber.dat")
+    (let ((contents
+            (read-all-objects stream (list '$eof$))))
+      (format t "~&Read ~S objects from the file."
+              (length contents))
+      contents)))
+
+(defun read-all-objects (stream eof-indicator)
+  (let ((result (read stream nil eof-indicator)))
+    (if (eq result eof-indicator)
+        nil
+        (cons result (read-all-objects stream)))))
+
+;;; PRINT IN DOT NOTATION
+;;; 9.11
+(defun dot-prin1 (lst)
+  (cond ((atom lst) (format t "~S" lst))
+        (t
+         (format t "(")
+         (dot-prin1 (first lst))
+         (format t " . ")
+         (dot-prin1 (rest lst))
+         (format t ")"))))
+
+;;; 9.15
+(defun hybrid-prin1)
