@@ -108,7 +108,59 @@
         (t (cons (* (first x) (first x)) (squre-list (rest x))))))
 
 ;;; 8.28
-(defun my-nth (n x))
+(defun my-nth (n x)
+  (cond ((null x) nil)
+        ((zerop n) (first x))
+        (t (my-nth (1- n) (rest x)))))
+
+;;; 8.29
+(defun my-member (x lst)
+  (cond ((null lst) nil)
+        ((equal x (first lst)) lst)
+        (t (my-member x (rest lst)))))
+
+;;; 8.30
+(defun my-assoc (key table)
+  (cond ((null table) nil)
+        ((equal key (caar table)) (first table))
+        (t (my-assoc key (rest table)))))
+
+;;; 8.31
+(defun compare-lengths (x y)
+  (cond ((and (null x) (null y)) 'same-length)
+        ((null x) 'second-is-longer)
+        ((null y) 'first-is-longer)
+        (t (compare-lengths (rest x)
+                            (rest y)))))
+
+;;; 8.32
+(defun sum-numeric-elements (lst)
+  (cond ((null lst) 0)
+        ((numberp (first lst))
+         (+ (first lst)
+            (sum-numeric-elements (rest lst))))
+        (t (sum-numeric-elements (rest lst)))))
+
+;;; 8.33
+(defun my-remove (x lst)
+  (cond ((null lst) nil)
+        ((equal x (first lst))
+         (my-remove x (rest lst)))
+        (t (cons (first lst) (my-remove x (rest lst))))))
+
+;;; 8.34
+(defun my-intersection (x y)
+  (cond ((null x) nil)
+        ((member (first x) y)
+         (cons (first x) (my-intersection (rest x) y)))
+        (t (my-intersection (rest x) y))))
+
+;;; 8.35
+(defun my-set-difference (x y)
+  (cond ((null x) nil)
+        ((member (first x) y)
+         (my-set-difference (rest x) y))
+        (t (cons (first x) (my-set-difference (rest x) y)))))
 
 ;;; 8.36
 (defun count-odd (lst)
