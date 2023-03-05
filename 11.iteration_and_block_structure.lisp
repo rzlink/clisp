@@ -233,3 +233,212 @@
             answer)))
 
 ;;; IMPLICIT BLOCKS
+(defun find-first-odd (x)
+  (format t "~&Searching for an odd number...")
+  (dolist (element x)
+    (when (oddp element)
+      (format t "~&Found ~S." element)
+      (return-from find-first-odd element)))
+  (format t "~&None found.")
+  'None)
+
+(defun square-list (x)
+  (mapcar
+   #'(lambda (e)
+       (if (numberp e)
+           (* e e)
+           (return-from square-list 'nope)))
+   x))
+
+;;; 11.18
+(dotimes (i 5 i)
+  (format t "~&I = ~S" i))
+
+(do ((i 0 (1+ i)))
+    ((= i 5) i)
+  (format t "~&I = ~S" i))
+
+;;; 11.21
+(defun it-fib (n)
+  (do ((i 1 (1+ i))
+        (curr 1 (+ curr prev))
+        (prev 1 curr))
+       ((>= i n) curr)))
+
+;;; Keyboard Exercise
+;;; 11.22
+(defun complement-base (base)
+  (second
+   (assoc base '((a t) (t a) (g c) (c g)))))
+
+(defun complement-strand (strand)
+  (mapcar #'complement-base strand))
+
+(defun complement-strand (strand)
+  (do ((s strand (rest s))
+       (result nil
+               (cons (complement-base (first s))
+                     result)))
+      ((null s) (reverse result))))
+
+(defun make-double (strand)
+  (mapcar #'list strand (complement-strand strand)))
+
+(defun make-double (strand)
+  (do ((s strand (rest s))
+       (result nil
+               (cons (list (first s)
+                           (complement-base (first s)))
+                     result)))
+      ((null s) (reverse result))))
+
+(defun count-bases (dna)
+  (let ((acnt 0) (tcnt 0) (gcnt 0) (ccnt 0))
+    (labels ((count-one-base (base)
+                            (cond ((equal base 'a) (incf acnt))
+                                  ((equal base 't) (incf tcnt))
+                                  ((equal base 'g) (incf gcnt))
+                                  ((equal base 'c) (incf ccnt)))))
+           (dolist (element dna)
+             (cond ((atom element) (count-one-base element))
+                   (t (count-one-base (first element))
+                      (count-one-base (second element)))))
+           (list (list 'a acnt)
+                 (list 't tcnt)
+                 (list 'g gcnt)
+                 (list 'c ccnt)))))
+
+(defun prefixp (strand1 strand2)
+  (do ((e1 strand1 (rest e1))
+       (e2 strand2 (rest e2)))
+      ((or (null e1) (null e2))
+       (null e1))
+    (when (not (equal (first e1) (first e2)))
+      (return nil))))
+
+(defun appearsp (strand1 strand2)
+  (do ((e2 strand2 (rest e2)))
+      ((null e2) nil)
+    (if (prefixp strand1 e2)
+        (return t))))
+
+(defun coverp (strand1 strand2)
+  (do* ((len1 (length strand1))
+        (s2 strand2 (nthcdr len1 s2)))
+       ((null s2) t)
+    (when (not (prefixp strand1 s2))
+      (return nil))))
+
+(defun prefix (n strand)
+  (do ((i 0 (1+ i))
+       (result nil))
+      ((= i n) (reverse result))
+    (push (nth i strand) result)))
+
+(defun kernel (strand)
+  (do* ((cnt 1 (1+ cnt))
+       (len (length strand))
+       (result (prefix cnt strand) (prefix cnt strand)))
+      ((> cnt len) nil)
+    (if (coverp result strand)
+        (return result))))
+
+(defun draw-dna (strand)
+  (let ((n (length strand)))
+    (draw-string n "-----")
+    (draw-string n "  !  ")
+    (draw-bases strand)
+    (draw-string n "  .  ")
+    (draw-string n "  .  ")
+    (draw-bases (complement-strand strand))
+    (draw-string n "  !  ")
+    (draw-string n "-----")))
+
+(defun draw-string (cnt string)
+  (format t "~&")
+  (dotimes (_ cnt)
+    (format t "~A" string)))
+
+(defun draw-bases (strand)
+  (format t "~&")
+  (dolist (base strand)
+    (format t "  ~A  " base)))
+
+;;; Lisp Toolkit: TIME
+(defun addup (n)
+  "Adds up the first N integers"
+  (do ((i 0 (+ i 1))
+       (sum 0 (+ sum i)))
+      ((> i n) sum)))
+
+(time (addup 1000))
+
+;;; Advanced Topics
+(prog1
+    (frist x)
+  (setf (rest x)))
+
+(let ((old-top (first x)))
+  (setf x (rest x))
+  old-top)
+
+;;; OPTIONAL ARGUMENTS
+(defun foo (x &optional y)
+  (format t "~&X is ~S" x)
+  (format t "~&Y is ~S" y)
+  (list x y))
+
+(defun divide-check (dividend &optional (divisor 2))
+  (format t "~&~S ~A divide evenly by ~S"
+          dividend
+          (if (zerop (rem dividend divisor))
+              "does"
+              "does not")
+          divisor))
+
+(divide-check 27 3)
+(divide-check 27)
+
+;;; REST ARGUMENTS
+(defun average (&rest args)
+  (/ (reduce #'+ args)
+     (length args)
+     1.0))
+
+(average 1 2 3 4 5)
+
+(average 3 5 11 19)
+
+;;; KEYWORD ARGUMENTS
+(defun make-sundae (name &key (size 'regular)
+                           (ice-cream 'vanilla)
+                           (syrup 'hot-fudge)
+                           nuts
+                           cherries
+                           whipped-cream)
+  (list 'sundae
+        (list 'for name)
+        (list ice-cream 'with syrup 'syrup)
+        (list 'toppings '=
+              (remove nil
+                      (list (and nuts 'nugs)
+                            (and cherries 'cherries)
+                            (and whipped-cream
+                                 'whipped-cream))))))
+
+(make-sundae 'cindy
+             :syrup 'strawberry
+             :nuts t
+             :cherries t)
+
+;;; Auxiliary variables
+(defun average (&rest args
+                &aux (len (length args)))
+  (/ (reduce #'+ args)
+     len 1.0))
+
+;;; Quick swap the value of two variable
+(let ((a 1)
+      (b 2))
+  (rotatef a b)
+  (cons a b))
