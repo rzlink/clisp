@@ -117,3 +117,57 @@
           "Are the battery cables dirty or loose?"
           "Clean the cables and tighten the connections."
           'battery-cabls-good)
+
+;;; 12.8 PRINT FUNCTIONS FOR STRUCTURES
+(defun print-starship (x stream)
+  (format stream "#<STARSHIP ~A>"
+          (starship-name x)))
+
+(print-starship s1 t 0)
+
+(defstruct (starship
+            (:print-function print-starship))
+  (captain nil)
+  (name nil)
+  (shields 'down)
+  (condition 'green)
+  (speed 0))
+
+(defparameter s4 (make-starship :name "Reliant"))
+
+;;; 12.9 EQUALITY OF STRUCTURES
+(defvar s5 (make-starship))
+
+(defvar s6 (make-starship))
+
+(equal s5 s6)
+(equal s6 s6)
+
+(equalp s5 s6)
+
+;;; INHERITANCE FROM OTHER STRUCTURS
+(defstruct ship
+  (name nil)
+  (captain nil)
+  (crew-size nil))
+
+(defstruct (starship (:include ship))
+  (weapons nil)
+  (shields nil))
+
+(defstruct (supply-ship (:include ship))
+  (cargo nil))
+
+
+(defvar z1 (make-starship
+            :captain "James T. Kirk"))
+
+(defvar z2 (make-supply-ship
+            :captain "Harry Mudd"))
+
+(ship-p z1)
+(starship-p z1)
+(supply-ship-p z1)
+
+(ship-captain z1)
+(sharship-captain z1)
